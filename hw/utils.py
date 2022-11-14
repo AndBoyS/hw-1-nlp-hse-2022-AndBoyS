@@ -16,10 +16,10 @@ def get_word_counters(texts: List[str],
 
     counter_dict = defaultdict(zero_func)
 
-    for text in tqdm(texts):
+    for text in texts:
 
         for token in text.split():
-            if stopwords and token not in stopwords:
+            if stopwords and token in stopwords:
                 continue
             counter_dict[token] = counter_dict.get(token, 0) + 1
 
