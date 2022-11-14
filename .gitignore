@@ -2,3 +2,4 @@ hw/.idea
 .DS_Store
 hw/data
 __pycache__
+.idea
