@@ -3,3 +3,6 @@ hw/.idea
 hw/data
 __pycache__
 .idea
+.vscode
+.ipynb_checkpoints
+venv
