@@ -1,11 +1,31 @@
 from typing import *
-import nltk
 from collections import defaultdict
-from tqdm import tqdm
-
+import re
+import nltk
 
 def zero_func():
     return 0
+
+
+def is_stopword(token: str, stopwords: List[str]):
+    """
+    Проверка на стопслово (список stopwords + еще пару проверок)
+    """
+    token = token.lower()
+    token = re.sub('-', '', token)
+    token = re.sub("'", '', token)
+
+    try:
+        assert len(token) > 1
+        assert token not in ["nt", "re", "ll", "ve"]
+
+        if stopwords:
+            assert token not in stopwords
+
+    except AssertionError:
+        return True
+
+    return False
 
 
 def get_word_counters(texts: List[str],
@@ -18,8 +38,9 @@ def get_word_counters(texts: List[str],
 
     for text in texts:
 
-        for token in text.split():
-            if stopwords and token in stopwords:
+        for token in nltk.word_tokenize(text):
+
+            if is_stopword(token, stopwords):
                 continue
             counter_dict[token] = counter_dict.get(token, 0) + 1
 
