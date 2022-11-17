@@ -64,12 +64,14 @@ def chunks(l, n):
         yield l[i::n]
 
 
-def get_word_counters_mp(texts: List[str]):
+def get_word_counters_mp(texts: List[str], n_jobs=-1):
 
-    num_processes = cpu_count() - 1
-    texts = list(chunks(texts, num_processes))
+    if n_jobs == -1:
+        n_jobs = cpu_count() - 1
 
-    with Pool(num_processes) as p:
+    texts = list(chunks(texts, n_jobs))
+
+    with Pool(n_jobs) as p:
         counters_and_tokenized_texts = p.map(get_word_counters_and_tokenize, texts)
 
     # Объединяем результаты процессов
@@ -150,17 +152,17 @@ def count_names(tokenized_texts, names):
     return name_counter, name_pair_counter, prof_name_counter
 
 
-def count_names_mp(tokenized_texts, names):
+def count_names_mp(tokenized_texts, names, n_jobs=-1):
     """
     names - список имен из Гарри Поттера, элемент либо состоит из одного имени
     """
 
-    num_processes = cpu_count() - 1
-    tokenized_texts = list(chunks(tokenized_texts, num_processes))
+    if n_jobs == -1:
+        n_jobs = cpu_count()
+    tokenized_texts = list(chunks(tokenized_texts, n_jobs))
     pool_inputs = [(t, names) for t in tokenized_texts]
 
-    with Pool(num_processes) as p:
-
+    with Pool(n_jobs) as p:
         pool_output = p.starmap(count_names, pool_inputs)
 
     name_counters = [l[0] for l in pool_output]
@@ -173,7 +175,6 @@ def count_names_mp(tokenized_texts, names):
         'name_pair_counter': defaultdict(lambda: 0),
         'prof_name_counter': defaultdict(lambda: 0),
     }
-
 
     for counters, (new_counter) in zip([name_counters, name_pair_counters, prof_name_counters],
                                        counters_dict.values()):
